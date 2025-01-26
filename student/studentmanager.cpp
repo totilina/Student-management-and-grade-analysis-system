@@ -5,10 +5,10 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QDateTime>
+/* @author totilina */
 
 StudentManager::StudentManager(){
-    studentDataFilePath = "studentData.json";
-    courseDataFilePath = "courseData.json";
+    dataFilePath = "data.json";
 }
 
 StudentManager::~StudentManager(){
@@ -210,7 +210,7 @@ bool StudentManager::updateStudent(const Student& oldStudent, const Student& new
 bool StudentManager::deleteStudent(const Student& student){
     for(QVector<Student>::Iterator it = students.begin(); it != students.end(); ++it){
         if(it->id == student.id){
-            students.erase(it);
+            students.erase(it); // 一个无关要紧的警告，不用在意
             return true;
         }
     }

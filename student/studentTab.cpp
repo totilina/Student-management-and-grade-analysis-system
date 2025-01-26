@@ -1,16 +1,14 @@
 #include "mainwindow.h"
-#include <QMessageBox>
-#include <QWidget>
-#include <QVBoxLayout>
-#include <QGroupBox>
-#include <QHBoxLayout>
-#include <QGridLayout>
 #include <QStringList>
 #include <QHeaderView>
+/* @author totilina */
 
 void MainWindow::createdStudentTab(){
     studentTab = new QWidget();
     QVBoxLayout *layout = new QVBoxLayout();
+
+    mainTabWidget->addTab(studentTab, "学生管理");
+    studentTab->setLayout(layout);
 
     QGroupBox *inputGroupBox = new QGroupBox("学生信息");
     QGridLayout *inputLayout = new QGridLayout();
@@ -140,11 +138,6 @@ void MainWindow::createdStudentTab(){
     // connect(studentModel, &QStandardItemModel::itemChanged, this, &MainWindow::treeDataChanged);
 
 
-    mainTabWidget->addTab(studentTab, "学生管理");
-
-    studentTab->setLayout(layout);
-
-
 
 }
 
@@ -153,7 +146,7 @@ void MainWindow::addStudent(){
     if(idEdit->text().isEmpty() || nameEdit->text().isEmpty() ||
         majorEdit->text().isEmpty() || gradeEdit->text().isEmpty() ||
         classEdit->text().isEmpty()) {
-        QMessageBox::warning(this, tr("警告"), tr("请填写所有必要信息"));
+        QMessageBox::warning(this, "警告", "请填写所有必要信息");
         return;
     }
 
@@ -164,7 +157,7 @@ void MainWindow::addStudent(){
                 classEdit->text());
 
     if(!studentmanager->addStudent(stu)){
-        QMessageBox::warning(this, tr("警告"), tr("学号重复，添加失败"));
+        QMessageBox::warning(this, "警告", "学号重复，添加失败");
     }else {
         clearInputEdits();
         qDebug()<<"添加学生完成";
@@ -176,7 +169,7 @@ void MainWindow::addStudent(){
 
 void MainWindow::updateStudent(){
     if(idEdit->text().isEmpty()){
-        QMessageBox::warning(this, tr("警告"), tr("请先填写学生学号"));
+        QMessageBox::warning(this, "警告", "请先填写学生学号");
         return ;
     }
     if(!studentmanager->findStudentById(idEdit->text()).id.isEmpty()){
@@ -185,7 +178,7 @@ void MainWindow::updateStudent(){
         if(idEdit->text().isEmpty() || nameEdit->text().isEmpty() ||
             majorEdit->text().isEmpty() || gradeEdit->text().isEmpty() ||
             classEdit->text().isEmpty()) {
-            QMessageBox::warning(this, tr("警告"), tr("请填写所有必要信息"));
+            QMessageBox::warning(this, "警告", "请填写所有必要信息");
             return;
         }
 
@@ -197,7 +190,7 @@ void MainWindow::updateStudent(){
                        );
         newStu.scores = oldStu.scores;
         if(!studentmanager->updateStudent(oldStu,newStu)){
-            QMessageBox::warning(this, tr("警告"), tr("学生信息更新失败！"));
+            QMessageBox::warning(this, "警告", "学生信息更新失败！");
         }
         QVector<Student> stus;
         stus.append(newStu);
@@ -205,13 +198,13 @@ void MainWindow::updateStudent(){
         return ;
     }
     else{
-        QMessageBox::information(this, tr("通知"), tr("该学号不存在"));
+        QMessageBox::information(this, "通知", "该学号不存在");
     }
 }
 
 void MainWindow::deleteStudent(){
     if(idEdit->text().isEmpty()){
-        QMessageBox::warning(this, tr("警告"), tr("请先填写学生学号"));
+        QMessageBox::warning(this, "警告", "请先填写学生学号");
         return ;
     }
     if(!studentmanager->findStudentById(idEdit->text()).id.isEmpty()){
@@ -232,7 +225,7 @@ void MainWindow::deleteStudent(){
             }
         }
     }else {
-        QMessageBox::information(this, tr("通知"), tr("该学号不存在"));
+        QMessageBox::information(this, "通知", "该学号不存在");
     }
 }
 
@@ -243,14 +236,14 @@ void MainWindow::searchStudent(){
         gradeEdit->text().isEmpty() &&
         classEdit->text().isEmpty()
         ) {
-        QMessageBox::warning(this, tr("警告"), tr("请先填写必要信息"));
+        QMessageBox::warning(this, "警告", "请先填写必要信息");
         return ;
     }
 
     if(!idEdit->text().isEmpty()){
         Student stu =  studentmanager->findStudentById(idEdit->text());
         if(stu.id.isEmpty()){
-            QMessageBox::information(this, tr("通知"), tr("该学号不存在"));
+            QMessageBox::information(this, "通知", "该学号不存在");
             return ;
         }
         nameEdit->setText(stu.name);
@@ -262,14 +255,14 @@ void MainWindow::searchStudent(){
         failedCourseCountLabel->setText(QString::number(stu.getFailedCoursesCount()));
         QVector<Student> stus;
         stus.append(stu);
-        refreshStudentTree(stus);  // 刷新显示
+        refreshStudentTree(stus);
         return ;
     }
 
     if(!nameEdit->text().isEmpty()){
         QVector<Student> stus =  studentmanager->findStudentsByName(nameEdit->text());
         if(stus.isEmpty()){
-            refreshStudentTree(stus);  // 刷新显示
+            refreshStudentTree(stus);
             return ;
         }
         idEdit->setText(stus.first().id);
@@ -285,31 +278,19 @@ void MainWindow::searchStudent(){
 
     if(!majorEdit->text().isEmpty()){
         QVector<Student> stus =  studentmanager->findStudentsByMajor(majorEdit->text());
-        if(stus.isEmpty()){
-            refreshStudentTree(stus);  // 刷新显示
-            return ;
-        }
-        refreshStudentTree(stus);  // 刷新显示
+        refreshStudentTree(stus);
         return ;
     }
 
     if(!gradeEdit->text().isEmpty()){
         QVector<Student> stus =  studentmanager->findStudentsByGrade(gradeEdit->text());
-        if(stus.isEmpty()){
-            refreshStudentTree(stus);  // 刷新显示
-            return ;
-        }
-        refreshStudentTree(stus);  // 刷新显示
+        refreshStudentTree(stus);
         return ;
     }
 
     if(!classEdit->text().isEmpty()){
         QVector<Student> stus =  studentmanager->findStudentsByClass(classEdit->text());
-        if(stus.isEmpty()){
-            refreshStudentTree(stus);  // 刷新显示
-            return ;
-        }
-        refreshStudentTree(stus);  // 刷新显示
+        refreshStudentTree(stus);
         return ;
     }
 }
@@ -332,6 +313,7 @@ void MainWindow::refreshStudentTree(const QVector<Student> &students){
     qDebug()<<"开始刷新表格";
     studentModel->clear();
 
+    //表头
     studentModel->setHorizontalHeaderLabels(
         QStringList()<< "学号" << "姓名" << "专业" << "年级" << "班级"<<"目前已修学分"<<"加权平均成绩"<<"不及格科目数"
     );
@@ -348,6 +330,7 @@ void MainWindow::refreshStudentTree(const QVector<Student> &students){
 
         studentModel->appendRow(studentRow);
 
+        // 成绩子表
         QStandardItem* gradesParent = studentRow[0];
         QList<QStandardItem*> headerRow;
         headerRow << new QStandardItem("")
@@ -391,6 +374,8 @@ void MainWindow::onStudentSelected(const QModelIndex &index){
     failedCourseCountLabel->setText(studentModel->data(studentModel->index(ind.row(), 7)).toString());
 }
 
+/* 废弃代码
+
 // 设置表格编辑
 // void MainWindow::treeDataChanged(QStandardItem *item){
 //     QModelIndex index = item->index();
@@ -418,3 +403,6 @@ void MainWindow::onStudentSelected(const QModelIndex &index){
 //     }
 
 // }
+
+废弃代码
+*/

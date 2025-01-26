@@ -15,8 +15,6 @@ public:
     double credit;
 
     Course();
-
-
 };
 
 class Student{
@@ -31,18 +29,19 @@ public:
 
     QVector<Course> scores;
 
-    Student(const QString id,
-            const QString name,
-            const QString major,
-            const QString grade,
-            const QString className);
+    Student(const QString& id,
+            const QString& name,
+            const QString& major,
+            const QString& grade,
+            const QString& className);
 
     Student();
     ~Student();
 
+    // 这些函数看名字应该就知道是什么作用了吧
     bool isEqual(const Student& student) const;
     double getAverageScore() const;
-    double getSourseScoreByName(const QString courseName) const;
+    double getCourseScoreByName(const QString courseName) const;
     double getFailedCoursesCount() const;
     double getCredit() const;
 

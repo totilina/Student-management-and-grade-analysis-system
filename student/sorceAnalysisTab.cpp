@@ -1,173 +1,151 @@
 #include "mainwindow.h"
-#include <QMessageBox>
-#include <QWidget>
-#include <QVBoxLayout>
-#include <QGroupBox>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <QStringList>
-#include <QHeaderView>
-#include <QComboBox>
-#include <algorithm>
-#include <QSet>
-#include <QFile>
-#include <QFileDialog>
-#include <QStringConverter>
+#include <QTableView>
+/* @author totilina */
 
 void MainWindow::createdScoreAnalysisTab(){
     scoreAnalysisTab = new QWidget();
+
     QVBoxLayout *layout = new QVBoxLayout();
+    scoreAnalysisTab->setLayout(layout);
+    mainTabWidget->addTab(scoreAnalysisTab,"成绩分析");
+
 
     QGroupBox *filteredGroupBox = new QGroupBox("筛选信息");
     QHBoxLayout *ComboxLayout = new QHBoxLayout();
 
-    courseComboBox = new QComboBox(this);
-    courseComboBox->setEditable(true);
-    courseComboBox->addItem("加权平均");
-    courseComboBox->setPlaceholderText("选择比较成绩");
+    analysisCourseComboBox = new QComboBox(this);
+    analysisCourseComboBox->setEditable(true);
+    analysisCourseComboBox->addItem("加权平均");
+    analysisCourseComboBox->setPlaceholderText("选择比较成绩");
 
-    majorComboBox = new QComboBox(this);
-    majorComboBox->setEditable(true);
-    majorComboBox->addItem("所有专业");
-    majorComboBox->setPlaceholderText("选择专业");
+    analysisMajorComboBox = new QComboBox(this);
+    analysisMajorComboBox->setEditable(true);
+    analysisMajorComboBox->addItem("所有专业");
+    analysisMajorComboBox->setPlaceholderText("选择专业");
 
-    gradeComboBox = new QComboBox(this);
-    gradeComboBox->setEditable(true);
-    gradeComboBox->addItem("所有年级");
-    gradeComboBox->setPlaceholderText("选择年级");
+    analysisGradeComboBox = new QComboBox(this);
+    analysisGradeComboBox->setEditable(true);
+    analysisGradeComboBox->addItem("所有年级");
+    analysisGradeComboBox->setPlaceholderText("选择年级");
 
-    classComboBox = new QComboBox(this);
-    classComboBox->setEditable(true);
-    classComboBox->addItem("所有班级");
-    classComboBox->setPlaceholderText("选择班级");
+    analysisClassComboBox = new QComboBox(this);
+    analysisClassComboBox->setEditable(true);
+    analysisClassComboBox->addItem("所有班级");
+    analysisClassComboBox->setPlaceholderText("选择班级");
+
+    for(const QString& course : courses){
+        analysisCourseComboBox->addItem(course);
+    }
+
+    for(const QString& major : majors){
+        analysisMajorComboBox->addItem(major);
+    }
+
+    for(const QString& grade : grades){
+        analysisGradeComboBox->addItem(grade);
+    }
+    for(const QString& className : classes){
+        analysisClassComboBox->addItem(className);
+    }
 
 
     ComboxLayout->addWidget(new QLabel("成绩:"));
-    ComboxLayout->addWidget(courseComboBox);
+    ComboxLayout->addWidget(analysisCourseComboBox);
     ComboxLayout->addWidget(new QLabel("专业:"));
-    ComboxLayout->addWidget(majorComboBox);
+    ComboxLayout->addWidget(analysisMajorComboBox);
     ComboxLayout->addWidget(new QLabel("年级:"));
-    ComboxLayout->addWidget(gradeComboBox);
-    ComboxLayout->addWidget(new QLabel("成绩:"));
-    ComboxLayout->addWidget(classComboBox);
+    ComboxLayout->addWidget(analysisGradeComboBox);
+    ComboxLayout->addWidget(new QLabel("班级:"));
+    ComboxLayout->addWidget(analysisClassComboBox);
 
     filteredGroupBox->setLayout(ComboxLayout);
     layout->addWidget(filteredGroupBox);
 
-    QGroupBox *buttonGroupBox = new QGroupBox("操作");
-    QHBoxLayout *buttonLayout = new QHBoxLayout();
+    QGroupBox *gradeDistGroup = new QGroupBox("成绩分布");
+    QVBoxLayout *gradeDistLayout = new QVBoxLayout();
+
+    analysisTableView = new QTableView();
+    analysisModel = new QStandardItemModel(this);
+    analysisTableView->setModel(analysisModel);
+    analysisModel->setHorizontalHeaderLabels(
+        QStringList() << "课程" << "平均分"  << "最高分" << "最低分"
+                      << "总人数" << "不及格人数" << "60~69分人数"
+                      << "70~79分人数" << "80~89分人数" << "90分以上人数"
+    );
+
+    gradeDistLayout->addWidget(analysisTableView);
+    gradeDistGroup->setLayout(gradeDistLayout);
+    layout->addWidget(gradeDistGroup);
+
+    connect(analysisCourseComboBox, &QComboBox::currentTextChanged, this, &MainWindow::analysisFilterChanged);
+    connect(analysisMajorComboBox, &QComboBox::currentTextChanged, this, &MainWindow::analysisFilterChanged);
+    connect(analysisGradeComboBox, &QComboBox::currentTextChanged, this, &MainWindow::analysisFilterChanged);
+    connect(analysisClassComboBox, &QComboBox::currentTextChanged, this, &MainWindow::analysisFilterChanged);
+
+    refreshAnalysisTableView(fileredStudents);
 
 
-    QPushButton *exportCsvButton = new QPushButton("将当前表格导出为CSV文件");
-    QPushButton *exportCsvsButton = new QPushButton("批量导出数据");
-
-    buttonLayout->addWidget(exportCsvButton);
-    buttonLayout->addWidget(exportCsvsButton);
-    buttonGroupBox->setLayout(buttonLayout);
-    layout->addWidget(buttonGroupBox);
-
-    scoresTreeView = new QTreeView();
-    scoresTreeView->setAnimated(true);
-    // scoresTreeView->setSortingEnabled(true);
-    scoresTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers); //将表格设为不可编辑
-    scoresModel = new QStandardItemModel();
-    scoresTreeView->setModel(scoresModel);
-
-    QVector<Student> stus = studentmanager->students;
-
-    std::sort(stus.begin(), stus.end(), [](const Student a, const Student b){
-        return a.getAverageScore() >b.getAverageScore();
-    });
-
-
-
-    layout->addWidget(scoresTreeView);
-    updateFileredOptios(studentmanager->students);
-    refreshScoresTree(stus);
-
-
-    connect(courseComboBox, &QComboBox::currentTextChanged, this, &MainWindow::onFilterChanged);
-    connect(majorComboBox, &QComboBox::currentTextChanged, this, &MainWindow::onFilterChanged);
-    connect(gradeComboBox, &QComboBox::currentTextChanged, this, &MainWindow::onFilterChanged);
-    connect(classComboBox, &QComboBox::currentTextChanged, this, &MainWindow::onFilterChanged);
-
-    connect(exportCsvButton, &QPushButton::clicked, this, &MainWindow::exportCsvFile);
-
-    mainTabWidget->addTab(scoreAnalysisTab,"成绩分析");
-    scoreAnalysisTab->setLayout(layout);
 }
 
-void MainWindow::refreshScoresTree(const QVector<Student> &students){
-    qDebug()<<"开始刷新表格";
-    scoresModel->clear();
-
-    scoresModel->setHorizontalHeaderLabels(
-        QStringList()<< "学号" << "姓名" << "专业" << "年级" << "班级"<<courseComboBox->currentText()+"成绩"
+void MainWindow::refreshAnalysisTableView(const QVector<Student>& students){
+    analysisModel->clear();
+    analysisModel->setHorizontalHeaderLabels(
+        QStringList() << "课程" << "平均分"  << "最高分" << "最低分"
+                      << "总人数" << "不及格人数" << "60~69分人数"
+                      << "70~79分人数" << "80~89分人数" << "90分以上人数"
         );
-    for(const Student& student : students){
-        QList<QStandardItem*> studentRow;
-        studentRow << new QStandardItem(student.id)
-                   << new QStandardItem(student.name)
-                   << new QStandardItem(student.major)
-                   << new QStandardItem(student.grade)
-                   << new QStandardItem(student.className)
-                   << new QStandardItem(QString::number(student.getSourseScoreByName(courseComboBox->currentText()), 'f', 2));
+    for(const QString& course : courses){
+        QVector<double> courseScores;
+        for (const Student& student : students){
+            courseScores.append(student.getCourseScoreByName(course));
+        }
+        if(!courseScores.isEmpty()){
+            double scoreSum = 0;
+            double scoreMax = courseScores[0];
+            double scoreMin = courseScores[0];
 
+            int sumCount = courseScores.size();
+            int filedCount = 0;
+            int score60to69Count = 0;
+            int score70to79Count = 0;
+            int score80to89Count = 0;
+            int score90PlusCount = 0;
 
-        scoresModel->appendRow(studentRow);
-    }
-    // studentTreeView->header()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
-    // studentTreeView->header()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+            for(const double& score : courseScores){
+                scoreSum += score;
+                scoreMax = qMax(scoreMax, score);
+                scoreMin = qMin(scoreMin, score);
+                if(score < 60) filedCount++;
+                if(score >= 60 && score < 70) score60to69Count++;
+                if(score >= 70 && score < 80) score70to79Count++;
+                if(score >= 80 && score < 90) score80to89Count++;
+                if(score >= 90 && score < 101) score90PlusCount++;
+            }
+            double avg = scoreSum / sumCount;
 
-    qDebug()<<"刷新表格完成";
-}
-
-void MainWindow::updateFileredOptios(const QVector<Student> &students){
-    courseComboBox->clear();
-    majorComboBox->clear();
-    gradeComboBox->clear();
-    classComboBox->clear();
-
-    courseComboBox->addItem("加权平均");
-    majorComboBox->addItem("所有专业");
-    gradeComboBox->addItem("所有年级");
-    classComboBox->addItem("所有班级");
-
-    courseComboBox->setCurrentText("加权平均");
-    majorComboBox->setCurrentText("所有专业");
-    gradeComboBox->setCurrentText("所有年级");
-    classComboBox->setCurrentText("所有班级");
-
-    QSet<QString> majors, grades, classes;
-    for(const Course& cour : studentmanager->courses){
-        courseComboBox->addItem(cour.name);
-    }
-    for(const Student& stu : students){
-        majors.insert(stu.major);
-        grades.insert(stu.grade);
-        classes.insert(stu.className);
-    }
-
-    for(const QString& major : majors){
-        majorComboBox->addItem(major);
-    }
-
-    for(const QString& grade : grades){
-        gradeComboBox->addItem(grade);
-    }
-    for(const QString& className : classes){
-        classComboBox->addItem(className);
+            QList<QStandardItem*> row;
+            row << new QStandardItem(course)
+                << new QStandardItem(QString::number(avg, 'f', 2))
+                << new QStandardItem(QString::number(scoreMax, 'f', 1))
+                << new QStandardItem(QString::number(scoreMin, 'f', 1))
+                << new QStandardItem(QString::number(sumCount))
+                << new QStandardItem(QString::number(filedCount))
+                << new QStandardItem(QString::number(score60to69Count))
+                << new QStandardItem(QString::number(score70to79Count))
+                << new QStandardItem(QString::number(score80to89Count))
+                << new QStandardItem(QString::number(score90PlusCount));
+            analysisModel->appendRow(row);
+        }
     }
 }
 
+void MainWindow::analysisFilterChanged(){
+    fileredStudents.clear();
+    // QString selectedCourse = analysisCourseComboBox->currentText();
+    QString selectedMajor = analysisMajorComboBox->currentText();
+    QString selectedGrade = analysisGradeComboBox->currentText();
+    QString selectedClass = analysisClassComboBox->currentText();
 
-void MainWindow::onFilterChanged(){
-    QString selectedCourse = courseComboBox->currentText();
-    QString selectedMajor = majorComboBox->currentText();
-    QString selectedGrade = gradeComboBox->currentText();
-    QString selectedClass = classComboBox->currentText();
-
-    QVector<Student> fileredStudents;
     for(const Student& stu : studentmanager->students){
         // bool courseMatch = ((selectedCourse == "加权平均成绩")||(!studentmanager->findCourseByName(selectedCourse).name.isEmpty()));
         bool majorMatch = ((selectedMajor == "所有专业")||(stu.major == selectedMajor));
@@ -179,52 +157,6 @@ void MainWindow::onFilterChanged(){
         }
 
     }
-    std::sort(fileredStudents.begin(),fileredStudents.end(),[selectedCourse](const Student& a, const Student& b){
-        return a.getSourseScoreByName(selectedCourse) > b.getSourseScoreByName(selectedCourse);
-    });
-    refreshScoresTree(fileredStudents);
-    // qDebug()<<fileredStudents.first().name;
-}
 
-void MainWindow::exportCsvFile(){
-    QString fileName = QFileDialog::getSaveFileName(this, "导出为CSV文件", "", "CSV文件(*.csv)");
-    if(fileName.isEmpty()){
-        return ;
-    }
-
-    QFile file(fileName);
-    if(!file.open(QIODevice::WriteOnly|QIODevice::Text)){
-        QMessageBox::warning(this, "错误", "无法打开文件进行写入");
-        return ;
-    }
-
-    QTextStream out(&file);
-    out.setEncoding(QStringConverter::Encoding::System);
-    out.setGenerateByteOrderMark(false);
-
-    // auto writeLine =
-
-    // out << "学号,姓名,专业,年级,班级," << courseComboBox->currentText() << "成绩\n";
-    for(int col = 0; col <scoresModel->columnCount(); ++col){
-        out << scoresModel->headerData(col, Qt::Horizontal).toString();
-        if(col < scoresModel->columnCount() - 1){
-            out << ",";
-        }
-    }
-    out << "\n";
-
-    for(int row = 0; row < scoresModel->rowCount(); ++row){
-        for(int col = 0; col < scoresModel->columnCount(); ++col){
-            QStandardItem *item = scoresModel->item(row, col);
-            if(item){
-                out << item->text();
-            }
-            if(col < scoresModel->columnCount() - 1){
-                out << ",";
-            }
-        }
-        out << "\n";
-    }
-    file.close();
-    QMessageBox::information(this, "成功", "CSV文件导出成功");
+    refreshAnalysisTableView(fileredStudents);
 }
