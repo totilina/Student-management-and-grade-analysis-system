@@ -81,6 +81,8 @@ private:
     void ascendingSort();
     void descendingSort();
 
+    void addNewCourse(); // 待实现
+
     // 可以使用QSet,为了简化数据结构可以使用QVector,但效率会降低
     QVector<QString> majors, grades, classes, courses;
 

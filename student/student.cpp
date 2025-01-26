@@ -1,4 +1,5 @@
 #include "student.h"
+/* @author totilina */
 
 Student::Student(const QString& id,
                  const QString& name,

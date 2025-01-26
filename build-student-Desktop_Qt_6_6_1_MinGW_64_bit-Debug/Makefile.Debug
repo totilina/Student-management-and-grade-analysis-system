@@ -340,6 +340,8 @@ debug/moc_mainwindow.cpp: ../student/mainwindow.h \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/qgridlayout.h \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/QHBoxLayout \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/QGridLayout \
+		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/QTableView \
+		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/qtableview.h \
 		../student/studentmanager.h \
 		../student/student.h \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtCore/QString \
@@ -580,6 +582,8 @@ debug/exportdata.o: ../student/exportdata.cpp ../student/mainwindow.h \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/qgridlayout.h \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/QHBoxLayout \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/QGridLayout \
+		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/QTableView \
+		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/qtableview.h \
 		../student/studentmanager.h \
 		../student/student.h \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtCore/QString \
@@ -817,6 +821,8 @@ debug/main.o: ../student/main.cpp ../student/mainwindow.h \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/qgridlayout.h \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/QHBoxLayout \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/QGridLayout \
+		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/QTableView \
+		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/qtableview.h \
 		../student/studentmanager.h \
 		../student/student.h \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtCore/QString \
@@ -1058,6 +1064,8 @@ debug/mainwindow.o: ../student/mainwindow.cpp ../student/mainwindow.h \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/qgridlayout.h \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/QHBoxLayout \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/QGridLayout \
+		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/QTableView \
+		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/qtableview.h \
 		../student/studentmanager.h \
 		../student/student.h \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtCore/QString \
@@ -1281,12 +1289,17 @@ debug/scoreManagerTab.o: ../student/scoreManagerTab.cpp ../student/mainwindow.h 
 		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/qgridlayout.h \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/QHBoxLayout \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/QGridLayout \
+		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/QTableView \
+		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/qtableview.h \
 		../student/studentmanager.h \
 		../student/student.h \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtCore/QString \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtCore/QMap \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtCore/QVector \
-		../../../../app/Qt/6.6.1/mingw_64/include/QtCore/qvector.h
+		../../../../app/Qt/6.6.1/mingw_64/include/QtCore/qvector.h \
+		../../../../app/Qt/6.6.1/mingw_64/include/QtCore/QStringList \
+		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/QHeaderView \
+		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/qheaderview.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\scoreManagerTab.o ..\student\scoreManagerTab.cpp
 
 debug/sorceAnalysisTab.o: ../student/sorceAnalysisTab.cpp ../student/mainwindow.h \
@@ -1501,15 +1514,14 @@ debug/sorceAnalysisTab.o: ../student/sorceAnalysisTab.cpp ../student/mainwindow.
 		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/qgridlayout.h \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/QHBoxLayout \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/QGridLayout \
+		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/QTableView \
+		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/qtableview.h \
 		../student/studentmanager.h \
 		../student/student.h \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtCore/QString \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtCore/QMap \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtCore/QVector \
-		../../../../app/Qt/6.6.1/mingw_64/include/QtCore/qvector.h \
-		../../../../app/Qt/6.6.1/mingw_64/include/QtCore/QStringList \
-		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/QHeaderView \
-		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/qheaderview.h
+		../../../../app/Qt/6.6.1/mingw_64/include/QtCore/qvector.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\sorceAnalysisTab.o ..\student\sorceAnalysisTab.cpp
 
 debug/student.o: ../student/student.cpp ../student/student.h \
@@ -1810,6 +1822,8 @@ debug/studentTab.o: ../student/studentTab.cpp ../student/mainwindow.h \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/qgridlayout.h \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/QHBoxLayout \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/QGridLayout \
+		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/QTableView \
+		../../../../app/Qt/6.6.1/mingw_64/include/QtWidgets/qtableview.h \
 		../student/studentmanager.h \
 		../student/student.h \
 		../../../../app/Qt/6.6.1/mingw_64/include/QtCore/QString \

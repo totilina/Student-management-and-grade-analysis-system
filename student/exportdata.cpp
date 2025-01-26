@@ -5,27 +5,27 @@
 #include <QCheckBox>
 #include <QDir>
 #include <QStandardPaths>
-
+/* @author totilina */
 
 bool MainWindow::exportCsvFile(const QVector<Student>& students,const QString& courseName, QString fileName){
     // 如果 fileName 为空，弹出文件对话框
     if (fileName.isEmpty()) {
-        // 获取当前目录的 data 文件夹路径
+        // 获取当前目录的 exportData 文件夹路径
         QDir currentDir = QDir::current(); // 获取当前目录
-        QString dataDirPath = currentDir.filePath("data"); // 当前目录下的 data 文件夹
+        QString dataDirPath = currentDir.filePath("exportData"); // 当前目录下的 data 文件夹
 
-        // 如果 data 文件夹不存在，则创建
+        // 如果 exportData 文件夹不存在，则创建
         if (!QDir(dataDirPath).exists()) {
             if (!QDir().mkdir(dataDirPath)) {
-                QMessageBox::warning(this, "错误", "无法创建 data 文件夹");
+                QMessageBox::warning(this, "错误", "无法创建 exportData 文件夹");
                 return false;
             }
         }
 
-        // 设置默认路径为 data 文件夹
+        // 设置默认路径为 exportData 文件夹
         QString defaultFileName = QDir(dataDirPath).filePath(courseName + ".csv");
 
-        // 弹出文件对话框，默认路径为 data 文件夹
+        // 弹出文件对话框，默认路径为 exportData 文件夹
         fileName = QFileDialog::getSaveFileName(this, "导出为CSV文件", defaultFileName, "CSV文件(*.csv)");
     }
 
@@ -82,7 +82,7 @@ bool MainWindow::exportCsvFile(const QVector<Student>& students,const QVector<QS
     }
 
     QTextStream out(&file);
-    out.setEncoding(QStringConverter::Encoding::System);
+    out.setEncoding(QStringConverter::Encoding::System);  // 设置保存文件编码为系统默认文件编码
     out.setGenerateByteOrderMark(false);
 
     out << "学号,姓名,专业,年级,班级,";
@@ -222,7 +222,7 @@ void MainWindow::batchExportData(){
         QVector<QVector<Student>> batchData;
         QVector<QString> fileNames;
 
-        // 获取选中的课程
+        // 获取第一个课程框选中的课程
         QStringList selectedFirstCourses;
         for (QCheckBox *checkBox : firstCheckBoxs) {
             if (checkBox && checkBox->isChecked()) {
@@ -230,7 +230,7 @@ void MainWindow::batchExportData(){
             }
         }
 
-        // 获取选中的课程
+        // 获取第二个课程框选中的课程
         QStringList selectedSecondCourses;
         for (QCheckBox *checkBox : secondCheckBoxs) {
             if (checkBox && checkBox->isChecked()) {
@@ -241,13 +241,19 @@ void MainWindow::batchExportData(){
         QVector<QVector<Student>> majorsStudents;
         StudentManager temp;
 
+        bool allmajor = false;
+
         // 获取选中的专业
         QStringList selectedMajors;
         for (QCheckBox *checkBox : thirdCheckBoxs) {
             if (checkBox && checkBox->isChecked()) {
-                selectedMajors.append(checkBox->text());
-                QVector<Student> majorsStudent = studentmanager->findStudentsByMajor(checkBox->text());
-                majorsStudents.append(majorsStudent);
+                if(checkBox->text() == "所有专业"){
+                    majorsStudents.append(studentmanager->students);
+                    allmajor = true;
+                }else {
+                    QVector<Student> majorsStudent = studentmanager->findStudentsByMajor(checkBox->text());
+                    majorsStudents.append(majorsStudent);
+                }
             }
         }
 
@@ -256,18 +262,23 @@ void MainWindow::batchExportData(){
         for (QCheckBox *checkBox : fourCheckBoxs) {
             if (checkBox && checkBox->isChecked()) {
                 selectedGrades.append(checkBox->text());
+
                 for(const QVector<Student>& students : majorsStudents){
                     QVector<Student> stus;
 
                     for(const Student &stu : students){
-                        if(stu.grade == checkBox->text()){
+                        if(stu.grade == checkBox->text() || checkBox->text() == "所有年级"){
                             stus.append(stu);
                         }
                     }
 
                     if(!stus.isEmpty()) {
                         batchData.append(stus);
-                        fileNames.append(stus.first().major + checkBox->text());
+                        if(allmajor) {
+                            fileNames.append("所有专业" + checkBox->text());
+                        }else {
+                            fileNames.append(stus.first().major + checkBox->text());
+                        }
                     }
                 }
             }
@@ -278,22 +289,42 @@ void MainWindow::batchExportData(){
         for (QCheckBox *checkBox : fiveCheckBoxs) {
             if (checkBox && checkBox->isChecked()) {
                 selectedClasses.append(checkBox->text());
-                batchData.append(studentmanager->findStudentsByClass(checkBox->text()));
-                fileNames.append(checkBox->text());
+                if(checkBox->text() == "所有班级"){
+                    batchData.append(studentmanager->students);
+                    fileNames.append("所有班级");
+                }else{
+                    batchData.append(studentmanager->findStudentsByClass(checkBox->text()));
+                    fileNames.append(checkBox->text());
+                }
             }
         }
-        // 输出选中的内容
+        // 输出选中的内容 （调试用后续可以删去，包括其用到的变量）
         qDebug() << "选中第一个框的课程:" << selectedFirstCourses;
         qDebug() << "选中第二个框的课程:" << selectedSecondCourses;
         qDebug() << "选中的专业:" << selectedMajors;
         qDebug() << "选中的年级:" << selectedGrades;
         qDebug() << "选中的班级:" << selectedClasses;
 
+        // 用户选择路径
         QDir currentDir = QDir::current(); // 获取当前目录
-        QString dataDirPath = currentDir.filePath("data"); // 当前目录下的 data 文件夹
+        QString dataDirPath = currentDir.filePath("exportData"); // 当前目录下的 exportData 文件夹
+        // 如果 exportData 文件夹不存在，则创建
+        if (!QDir(dataDirPath).exists()) {
+            if (!QDir().mkdir(dataDirPath)) {
+                QMessageBox::warning(this, "错误", "无法创建 exportData 文件夹");
+                return ;
+            }
+        }
         QString dirPath = QFileDialog::getExistingDirectory(this, "选择保存路径", dataDirPath);
 
-        bool e = true;
+
+
+        // 如果用户取消了对话框，返回
+        if (dirPath.isEmpty()) {
+            return ;
+        }
+
+        bool e = true; // 判断是否成功导出全部数据文件的变量
         for(int i = 0; i < batchData.size() ; ++i){
             QString fileName = QDir(dirPath).filePath(fileNames[i] + "_混合成绩.csv");
             if(!exportCsvFile(batchData[i], selectedFirstCourses, fileName)){

@@ -15,8 +15,6 @@ public:
     double credit;
 
     Course();
-
-
 };
 
 class Student{
@@ -40,6 +38,7 @@ public:
     Student();
     ~Student();
 
+    // 这些函数看名字应该就知道是什么作用了吧
     bool isEqual(const Student& student) const;
     double getAverageScore() const;
     double getCourseScoreByName(const QString courseName) const;
