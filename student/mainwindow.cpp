@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
         studentmanager->dataImportSucceeded = false;
         QMessageBox::warning(this, "警告", "数据导入失败,本次对数据信息的修改将不会保存");
     }
+    fileredStudents = studentmanager->students;
     stepUi();
 }
 
@@ -30,8 +31,9 @@ void MainWindow::stepUi(){
 
     mainTabWidget = new QTabWidget();
     setCentralWidget(mainTabWidget);
-    createdScoreAnalysisTab();
     createdScoreManagerTab();
+    createdScoreAnalysisTab();
+
     createdStudentTab();
 }
 

@@ -34,8 +34,6 @@ public:
 
 private:
     QString dataFilePath = "data.json";
-    QString studentDataFilePath = "studentData.json";
-    QString courseDataFilePath = "courseData.json";
 };
 
 #endif // STUDENTMANAGER_H

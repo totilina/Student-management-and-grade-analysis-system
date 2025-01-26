@@ -1,12 +1,10 @@
 #include "student.h"
 
-
-
-Student::Student(const QString id,
-                 const QString name,
-                 const QString major,
-                 const QString grade,
-                 const QString className){
+Student::Student(const QString& id,
+                 const QString& name,
+                 const QString& major,
+                 const QString& grade,
+                 const QString& className){
     this->id = id;
     this->name = name;
     this->major = major;
@@ -64,7 +62,7 @@ double Student::getFailedCoursesCount() const{
     return count;
 }
 
-double Student::getSourseScoreByName(const QString courseName) const{
+double Student::getCourseScoreByName(const QString courseName) const{
     if(courseName == "加权平均") return getAverageScore();
     for(const Course& cour : scores){
         if(cour.name == courseName){

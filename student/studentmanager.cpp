@@ -7,8 +7,7 @@
 #include <QDateTime>
 
 StudentManager::StudentManager(){
-    studentDataFilePath = "studentData.json";
-    courseDataFilePath = "courseData.json";
+    QString dataFilePath = "data.json";
 }
 
 StudentManager::~StudentManager(){

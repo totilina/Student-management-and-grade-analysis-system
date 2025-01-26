@@ -31,18 +31,18 @@ public:
 
     QVector<Course> scores;
 
-    Student(const QString id,
-            const QString name,
-            const QString major,
-            const QString grade,
-            const QString className);
+    Student(const QString& id,
+            const QString& name,
+            const QString& major,
+            const QString& grade,
+            const QString& className);
 
     Student();
     ~Student();
 
     bool isEqual(const Student& student) const;
     double getAverageScore() const;
-    double getSourseScoreByName(const QString courseName) const;
+    double getCourseScoreByName(const QString courseName) const;
     double getFailedCoursesCount() const;
     double getCredit() const;
 

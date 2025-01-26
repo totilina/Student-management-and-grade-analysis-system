@@ -1,10 +1,4 @@
 #include "mainwindow.h"
-#include <QMessageBox>
-#include <QWidget>
-#include <QVBoxLayout>
-#include <QGroupBox>
-#include <QHBoxLayout>
-#include <QGridLayout>
 #include <QStringList>
 #include <QHeaderView>
 
@@ -391,6 +385,8 @@ void MainWindow::onStudentSelected(const QModelIndex &index){
     failedCourseCountLabel->setText(studentModel->data(studentModel->index(ind.row(), 7)).toString());
 }
 
+/* 废弃代码
+
 // 设置表格编辑
 // void MainWindow::treeDataChanged(QStandardItem *item){
 //     QModelIndex index = item->index();
@@ -418,3 +414,6 @@ void MainWindow::onStudentSelected(const QModelIndex &index){
 //     }
 
 // }
+
+废弃代码
+*/
